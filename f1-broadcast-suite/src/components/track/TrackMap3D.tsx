@@ -57,7 +57,7 @@ export function TrackMap3D({ sessionKey, drivers, locations }: Props) {
     <div className="absolute inset-0">
       
       {/* UI Overlay */}
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 pointer-events-none">
+      <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2 pointer-events-none">
         <button 
           onClick={() => setIsDirectorMode(!isDirectorMode)}
           className={`pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-md ring-1 transition-all backdrop-blur-md ${
