@@ -19,41 +19,30 @@ function NetflixMode() {
     { session_key: session?.session_key },
     { enabled: !!session },
   );
-  const { data: positions } = useOpenF1<OF1Position[]>(
-    "position",
-    { session_key: session?.session_key },
-    { enabled: !!session },
-  );
   const { data: laps } = useOpenF1<OF1Lap[]>(
     "laps",
     { session_key: session?.session_key },
     { enabled: !!session },
   );
 
-  // Compute podium — latest position per driver
+  // Compute podium — top 3 by lap count
   const podium = useMemo(() => {
-    if (!drivers || !positions || positions.length === 0) return [];
-    const posMap = new Map<number, number>();
-    for (const p of positions) {
-      const prev = posMap.get(p.driver_number);
-      if (prev === undefined || p.date > (positions.find(x => x.driver_number === p.driver_number && posMap.get(p.driver_number) === x.position)?.date ?? "")) {
-        posMap.set(p.driver_number, p.position);
-      }
+    if (!drivers || !laps || laps.length === 0) return [];
+    
+    const maxLaps = new Map<number, number>();
+    for (const l of laps) {
+      maxLaps.set(l.driver_number, Math.max(maxLaps.get(l.driver_number) || 0, l.lap_number));
     }
-    // Simple latest position per driver
-    const latestPos = new Map<number, { pos: number; date: string }>();
-    for (const p of positions) {
-      const cur = latestPos.get(p.driver_number);
-      if (!cur || p.date > cur.date) latestPos.set(p.driver_number, { pos: p.position, date: p.date });
-    }
+    
     return drivers
       .map((d) => ({
         driver: d,
-        position: latestPos.get(d.driver_number)?.pos ?? 99,
+        laps: maxLaps.get(d.driver_number) || 0,
       }))
-      .sort((a, b) => a.position - b.position)
-      .slice(0, 3);
-  }, [drivers, positions]);
+      .sort((a, b) => b.laps - a.laps)
+      .slice(0, 3)
+      .map((d, idx) => ({ driver: d.driver, position: idx + 1 }));
+  }, [drivers, laps]);
 
   // Best lap of race
   const fastestLap = useMemo(() => {

@@ -56,15 +56,8 @@ export function TelemetryChart({ sessionKey, driverNumber, color }: Props) {
     );
   }
 
-  if (loading && frames.length === 0) {
-    return (
-      <div className="h-44 bg-[#111] ring-1 ring-white/5 rounded-md flex items-center justify-center">
-        <span className="text-[10px] text-[#888] font-orbitron uppercase tracking-widest animate-pulse">
-          Connecting to car data…
-        </span>
-      </div>
-    );
-  }
+  // We removed the early return for `loading && frames.length === 0` 
+  // so the layout (and Audio Player) remains stable and visible.
 
   return (
     <div className="flex flex-col gap-4">
