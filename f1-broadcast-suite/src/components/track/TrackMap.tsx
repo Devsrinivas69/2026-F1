@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import * as d3 from "d3";
 import { useOpenF1, useLatestDataDate } from "@/hooks/useOpenF1";
 import { type OF1Driver, type OF1Location } from "@/lib/openf1";
+import { Video } from "lucide-react";
 
 const TrackMap3D = lazy(() => import("./TrackMap3D").then((m) => ({ default: m.TrackMap3D })));
 
@@ -11,6 +12,7 @@ interface Props {
 
 export function TrackMap({ sessionKey }: Props) {
   const [mode, setMode] = useState<"2D" | "3D">("2D");
+  const [isDirectorMode, setIsDirectorMode] = useState(false);
   const { data: drivers } = useOpenF1<OF1Driver[]>("drivers", { session_key: sessionKey }, { intervalMs: 30_000 });
   const latestDate = useLatestDataDate(sessionKey);
   const { data: locations, loading, error } = useOpenF1<OF1Location[]>(
@@ -20,8 +22,31 @@ export function TrackMap({ sessionKey }: Props) {
   );
   return (
     <div className="aspect-video bg-[#111] ring-1 ring-white/5 rounded-md flex flex-col p-5 relative">
-      <div className="flex justify-between items-center mb-4">
-        <span className="font-orbitron text-xs font-semibold tracking-widest uppercase">Live Track</span>
+      <div className="flex justify-between items-center mb-4 z-20">
+        <div className="flex items-center gap-4">
+          <span className="font-orbitron text-xs font-semibold tracking-widest uppercase">Live Track</span>
+          {mode === "3D" && (
+            <button 
+              onClick={() => setIsDirectorMode(!isDirectorMode)}
+              className={`flex items-center gap-2 px-3 py-1 rounded-sm ring-1 transition-all ${
+                isDirectorMode 
+                  ? "bg-[#E8002D]/20 ring-[#E8002D] text-white shadow-[#E8002D]/20"
+                  : "bg-black/80 ring-white/20 text-[#F5F5F5] hover:bg-black hover:ring-white/40"
+              }`}
+            >
+              <Video className="size-3" />
+              <span className="text-[10px] font-orbitron font-bold uppercase tracking-widest">
+                {isDirectorMode ? "Director Active" : "AI Director"}
+              </span>
+              {isDirectorMode && (
+                <span className="flex size-1.5 ml-1">
+                  <span className="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full bg-[#E8002D] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E8002D]"></span>
+                </span>
+              )}
+            </button>
+          )}
+        </div>
         <div className="flex bg-[#0a0a0a] ring-1 ring-white/5 rounded-sm overflow-hidden">
           {(["2D", "3D"] as const).map((m) => (
             <button
@@ -49,7 +74,7 @@ export function TrackMap({ sessionKey }: Props) {
           <TrackMap2D drivers={drivers ?? []} locations={locations ?? []} />
         ) : (
           <Suspense fallback={<LoadingHud label="Loading 3D scene…" />}>
-            <TrackMap3D sessionKey={sessionKey} drivers={drivers ?? []} locations={locations ?? []} />
+            <TrackMap3D sessionKey={sessionKey} drivers={drivers ?? []} locations={locations ?? []} isDirectorMode={isDirectorMode} />
           </Suspense>
         )}
       </div>

@@ -14,11 +14,11 @@ interface Props {
   sessionKey: number;
   drivers: OF1Driver[];
   locations: OF1Location[];
+  isDirectorMode: boolean;
 }
 
-export function TrackMap3D({ sessionKey, drivers, locations }: Props) {
+export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: Props) {
   const { data: trackData, loading, error } = useTrackGeometry(sessionKey);
-  const [isDirectorMode, setIsDirectorMode] = useState(false);
   const [subtitle, setSubtitle] = useState("");
   const [focusDistance, setFocusDistance] = useState(10);
 
@@ -56,29 +56,6 @@ export function TrackMap3D({ sessionKey, drivers, locations }: Props) {
   return (
     <div className="absolute inset-0">
       
-      {/* UI Overlay */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col gap-2 pointer-events-none">
-        <button 
-          onClick={() => setIsDirectorMode(!isDirectorMode)}
-          className={`pointer-events-auto flex items-center gap-3 px-6 py-3 rounded-full ring-1 transition-all backdrop-blur-md shadow-2xl ${
-            isDirectorMode 
-              ? "bg-[#E8002D]/20 ring-[#E8002D] text-white shadow-[#E8002D]/20"
-              : "bg-black/80 ring-white/20 text-[#F5F5F5] hover:bg-black hover:ring-white/40"
-          }`}
-        >
-          <Video className="size-5" />
-          <span className="text-xs font-orbitron font-bold uppercase tracking-widest">
-            {isDirectorMode ? "Director Active" : "Enable AI Director"}
-          </span>
-          {isDirectorMode && (
-            <span className="flex size-2">
-              <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[#E8002D] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E8002D]"></span>
-            </span>
-          )}
-        </button>
-      </div>
-
       {/* Subtitles Overlay */}
       <AnimatePresence>
         {isDirectorMode && subtitle && (
