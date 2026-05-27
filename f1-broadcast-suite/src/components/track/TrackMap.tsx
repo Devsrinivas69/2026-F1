@@ -23,29 +23,30 @@ export function TrackMap({ sessionKey }: Props) {
   return (
     <div className="aspect-video bg-[#111] ring-1 ring-white/5 rounded-md flex flex-col p-5 relative">
       <div className="flex justify-between items-center mb-4 z-20">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <span className="font-orbitron text-xs font-semibold tracking-widest uppercase">Live Track</span>
-          {mode === "3D" && (
-            <button 
-              onClick={() => setIsDirectorMode(!isDirectorMode)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-sm ring-1 transition-all ${
-                isDirectorMode 
-                  ? "bg-[#E8002D]/20 ring-[#E8002D] text-white shadow-[#E8002D]/20"
-                  : "bg-black/80 ring-white/20 text-[#F5F5F5] hover:bg-black hover:ring-white/40"
-              }`}
-            >
-              <Video className="size-3" />
-              <span className="text-[10px] font-orbitron font-bold uppercase tracking-widest">
-                {isDirectorMode ? "Director Active" : "AI Director"}
+          <button 
+            onClick={() => {
+              setMode("3D");
+              setIsDirectorMode(!isDirectorMode);
+            }}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md ring-1 transition-all ${
+              isDirectorMode 
+                ? "bg-[#E8002D] ring-white text-white shadow-[0_0_15px_rgba(232,0,45,0.5)]"
+                : "bg-[#111] ring-[#E8002D]/50 text-[#E8002D] hover:bg-[#E8002D]/10 hover:ring-[#E8002D]"
+            }`}
+          >
+            <Video className="size-3.5" />
+            <span className="text-[10px] font-orbitron font-black uppercase tracking-widest">
+              {isDirectorMode ? "Director Active" : "Start AI Director"}
+            </span>
+            {isDirectorMode && (
+              <span className="flex size-1.5 ml-1">
+                <span className="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
               </span>
-              {isDirectorMode && (
-                <span className="flex size-1.5 ml-1">
-                  <span className="animate-ping absolute inline-flex h-1.5 w-1.5 rounded-full bg-[#E8002D] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E8002D]"></span>
-                </span>
-              )}
-            </button>
-          )}
+            )}
+          </button>
         </div>
         <div className="flex bg-[#0a0a0a] ring-1 ring-white/5 rounded-sm overflow-hidden">
           {(["2D", "3D"] as const).map((m) => (
