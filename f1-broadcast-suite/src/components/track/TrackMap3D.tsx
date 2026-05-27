@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { type OF1Driver, type OF1Location } from "@/lib/openf1";
 import { useTrackGeometry } from "@/hooks/useTrackGeometry";
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: Props) {
+  const { scene: jeddahTrack } = useGLTF("/tracks/yeddah_f1_circuit.glb");
   const { data: trackData, loading, error } = useTrackGeometry(sessionKey);
   const [subtitle, setSubtitle] = useState("");
   const [focusDistance, setFocusDistance] = useState(10);
@@ -100,6 +102,11 @@ export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: P
           <meshStandardMaterial color="#0a0a0a" roughness={1} />
         </mesh>
 
+        {/* Custom 3D Track Model Backdrop */}
+        <group position={[0, -10, 0]} scale={[10, 10, 10]}>
+          <primitive object={jeddahTrack} />
+        </group>
+
         {/* Live Cars */}
         {points.map((p) => {
           const d = driverMap.get(p.driver_number);
@@ -149,3 +156,5 @@ export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: P
     </div>
   );
 }
+
+useGLTF.preload("/tracks/yeddah_f1_circuit.glb");

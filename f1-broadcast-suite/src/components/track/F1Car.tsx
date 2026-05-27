@@ -1,6 +1,6 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { useGLTF, Clone } from "@react-three/drei";
 import * as THREE from "three";
 
 interface F1CarProps {
@@ -12,6 +12,31 @@ interface F1CarProps {
 export function F1Car({ target, color, driverNumber }: F1CarProps) {
   const group = useRef<THREE.Group>(null);
   
+  // Load the optimized Mercedes W14 GLB model from the public folder.
+  // useGLTF automatically caches the model so it's only loaded once for all 20 cars!
+  const { scene } = useGLTF("/cars/mercedes_f1_w14_free.glb");
+
+  // Create a unique clone of the scene for this specific car so we can modify its materials
+  // without affecting the other 19 cars.
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone();
+    
+    // Optional: We can traverse the model and apply the team's color to the chassis!
+    // Since we don't know the exact mesh names of the Sketchfab model, we tint 
+    // the materials slightly or replace the main body color if we find a painted surface.
+    clone.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.material) {
+        // Just as an example, if a material has a color property, we can blend it 
+        // with the team color to give a subtle tint of the driver's team!
+        if (child.material.color) {
+          // You could uncomment this to force the team color onto the car:
+          // child.material.color.lerp(new THREE.Color(color), 0.5);
+        }
+      }
+    });
+    return clone;
+  }, [scene, color]);
+
   // Smoothly interpolate position and rotation
   useFrame((state, delta) => {
     if (!group.current) return;
@@ -33,141 +58,25 @@ export function F1Car({ target, color, driverNumber }: F1CarProps) {
     }
   });
 
-  // High-fidelity PBR Materials
-  const materials = useMemo(() => {
-    return {
-      paint: new THREE.MeshPhysicalMaterial({ 
-        color: color,
-        metalness: 0.6,
-        roughness: 0.2,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1,
-      }),
-      carbon: new THREE.MeshPhysicalMaterial({ 
-        color: "#151515", 
-        metalness: 0.8,
-        roughness: 0.6,
-        clearcoat: 0.5,
-        clearcoatRoughness: 0.3,
-      }),
-      rubber: new THREE.MeshStandardMaterial({ 
-        color: "#0a0a0a", 
-        roughness: 0.9, 
-        metalness: 0.1 
-      }),
-      rims: new THREE.MeshStandardMaterial({ 
-        color: "#222", 
-        metalness: 0.9, 
-        roughness: 0.2 
-      })
-    };
-  }, [color]);
-
   return (
-    <group ref={group} position={target} scale={[0.4, 0.4, 0.4]}>
-      
-      {/* --- CHASSIS & MONOCOQUE --- */}
-      {/* Main Body */}
-      <RoundedBox args={[0.6, 0.35, 2.5]} position={[0, 0.35, 0]} radius={0.1} castShadow receiveShadow>
-        <primitive object={materials.paint} attach="material" />
-      </RoundedBox>
+    <group ref={group} position={target}>
+      {/* 
+        Wrap the clone in a group to handle scale and rotation offsets.
+        3D models from Sketchfab often have arbitrary scales (e.g. 100x too big) 
+        and face the wrong direction. Adjust these values until it matches the old car size.
+      */}
+      <group scale={[0.15, 0.15, 0.15]} position={[0, -0.35, 0]} rotation={[0, Math.PI, 0]}>
+        <primitive object={clonedScene} />
+      </group>
 
-      {/* Nose Cone (sloped) */}
-      <mesh position={[0, 0.25, 1.8]} rotation={[-0.15, 0, 0]} castShadow>
-        <cylinderGeometry args={[0.2, 0.3, 1.5, 4]} />
-        <primitive object={materials.paint} attach="material" />
+      {/* Floating Team Color Marker above the car so you can identify them */}
+      <mesh position={[0, 2.5, 0]}>
+        <sphereGeometry args={[0.3, 16, 16]} />
+        <meshBasicMaterial color={color} />
       </mesh>
-
-      {/* Sidepods (Aggressive undercut) */}
-      <RoundedBox args={[1.4, 0.3, 1.2]} position={[0, 0.3, -0.2]} radius={0.15} castShadow>
-        <primitive object={materials.paint} attach="material" />
-      </RoundedBox>
-      
-      {/* Floor (Carbon Fiber) */}
-      <RoundedBox args={[1.6, 0.05, 2.8]} position={[0, 0.15, -0.1]} radius={0.02} castShadow receiveShadow>
-        <primitive object={materials.carbon} attach="material" />
-      </RoundedBox>
-
-      {/* Engine Cover & Shark Fin */}
-      <mesh position={[0, 0.6, -0.8]} castShadow>
-        <boxGeometry args={[0.2, 0.4, 1.2]} />
-        <primitive object={materials.paint} attach="material" />
-      </mesh>
-      <mesh position={[0, 0.75, -1.2]} rotation={[0.2, 0, 0]} castShadow>
-        <boxGeometry args={[0.05, 0.4, 0.8]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-
-
-      {/* --- AERODYNAMICS --- */}
-      {/* Front Wing Main Plane */}
-      <RoundedBox args={[1.8, 0.05, 0.3]} position={[0, 0.15, 2.3]} radius={0.02} castShadow>
-        <primitive object={materials.carbon} attach="material" />
-      </RoundedBox>
-      {/* Front Wing Upper Flaps (Painted) */}
-      <RoundedBox args={[1.8, 0.05, 0.2]} position={[0, 0.25, 2.2]} rotation={[0.1, 0, 0]} radius={0.01} castShadow>
-        <primitive object={materials.paint} attach="material" />
-      </RoundedBox>
-      {/* Front Wing Endplates */}
-      <mesh position={[0.9, 0.25, 2.25]} rotation={[0, 0.1, 0]} castShadow>
-        <boxGeometry args={[0.05, 0.3, 0.5]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-      <mesh position={[-0.9, 0.25, 2.25]} rotation={[0, -0.1, 0]} castShadow>
-        <boxGeometry args={[0.05, 0.3, 0.5]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-
-      {/* Rear Wing Main Plane */}
-      <RoundedBox args={[1.0, 0.05, 0.3]} position={[0, 0.8, -1.8]} radius={0.02} castShadow>
-        <primitive object={materials.carbon} attach="material" />
-      </RoundedBox>
-      {/* Rear Wing DRS Flap */}
-      <RoundedBox args={[1.0, 0.05, 0.2]} position={[0, 0.95, -1.9]} rotation={[-0.1, 0, 0]} radius={0.01} castShadow>
-        <primitive object={materials.paint} attach="material" />
-      </RoundedBox>
-      {/* Rear Wing Endplates */}
-      <mesh position={[0.48, 0.7, -1.85]} castShadow>
-        <boxGeometry args={[0.05, 0.6, 0.5]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-      <mesh position={[-0.48, 0.7, -1.85]} castShadow>
-        <boxGeometry args={[0.05, 0.6, 0.5]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-
-      {/* Halo */}
-      <mesh position={[0, 0.65, 0.2]} rotation={[-Math.PI / 8, 0, 0]} castShadow>
-        <torusGeometry args={[0.25, 0.03, 8, 24, Math.PI]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-      <mesh position={[0, 0.55, 0.45]} rotation={[0.4, 0, 0]} castShadow>
-        <cylinderGeometry args={[0.02, 0.02, 0.3]} />
-        <primitive object={materials.carbon} attach="material" />
-      </mesh>
-
-
-      {/* --- WHEELS --- */}
-      {[
-        [0.8, 0.35, 1.5],   // Front Left
-        [-0.8, 0.35, 1.5],  // Front Right
-        [0.8, 0.35, -1.3],  // Rear Left
-        [-0.8, 0.35, -1.3]  // Rear Right
-      ].map((pos, i) => (
-        <group key={i} position={new THREE.Vector3(...pos)}>
-          {/* Tire */}
-          <mesh rotation={[0, 0, Math.PI / 2]} castShadow receiveShadow>
-            <cylinderGeometry args={[0.35, 0.35, 0.35, 32]} />
-            <primitive object={materials.rubber} attach="material" />
-          </mesh>
-          {/* Wheel Cover (Aero) */}
-          <mesh rotation={[0, 0, Math.PI / 2]} position={[i % 2 === 0 ? 0.18 : -0.18, 0, 0]}>
-            <circleGeometry args={[0.25, 32]} />
-            <primitive object={materials.rims} attach="material" />
-          </mesh>
-        </group>
-      ))}
-
     </group>
   );
 }
+
+// Preload the model so it starts downloading immediately
+useGLTF.preload("/cars/mercedes_f1_w14_free.glb");
