@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#F5F5F5] font-jetbrains pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0a] text-[#F5F5F5] font-jetbrains pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
       {!isPitWall && (
         <header className="hidden md:flex sticky top-0 z-40 items-center justify-between px-8 py-0 border-b border-white/5 bg-[#0a0a0a]/95 backdrop-blur-md h-14">
           {/* Logo */}
@@ -73,7 +73,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
       )}
 
-      {children}
+      <main className="flex-1 flex flex-col relative">
+        {children}
+      </main>
+
+      {!isPitWall && (
+        <footer className="hidden md:flex border-t border-white/5 bg-[#050505] py-4 px-8 items-center justify-between z-40 shrink-0">
+          <div className="flex items-center gap-4 text-[#555] text-[10px] font-orbitron uppercase tracking-widest">
+            <span>© 2026 F1 Live Commander</span>
+          </div>
+          <Link to="/about" className="group flex items-center gap-3">
+            <span className="text-[#555] text-[10px] font-orbitron uppercase tracking-widest group-hover:text-[#888] transition-colors">
+              Engineered by
+            </span>
+            <div className="px-3 py-1 bg-[#111] ring-1 ring-white/10 rounded-sm group-hover:ring-[#E8002D]/50 group-hover:bg-[#E8002D]/10 transition-all">
+              <span className="text-[#E8002D] text-[11px] font-orbitron font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(232,0,45,0.5)]">
+                Srinivas Reddy K.H
+              </span>
+            </div>
+          </Link>
+        </footer>
+      )}
 
       {!isPitWall && (
         <nav
