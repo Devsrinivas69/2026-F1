@@ -15,6 +15,7 @@ import { Route as ReplayRouteImport } from './routes/replay'
 import { Route as PitwallRouteImport } from './routes/pitwall'
 import { Route as NetflixRouteImport } from './routes/netflix'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TelemetryRoute = TelemetryRouteImport.update({
@@ -47,6 +48,11 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/live': typeof LiveRoute
   '/netflix': typeof NetflixRoute
   '/pitwall': typeof PitwallRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/live': typeof LiveRoute
   '/netflix': typeof NetflixRoute
   '/pitwall': typeof PitwallRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/live': typeof LiveRoute
   '/netflix': typeof NetflixRoute
   '/pitwall': typeof PitwallRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/live'
     | '/netflix'
     | '/pitwall'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/live'
     | '/netflix'
     | '/pitwall'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/live'
     | '/netflix'
     | '/pitwall'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   LiveRoute: typeof LiveRoute
   NetflixRoute: typeof NetflixRoute
   PitwallRoute: typeof PitwallRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   LiveRoute: LiveRoute,
   NetflixRoute: NetflixRoute,
   PitwallRoute: PitwallRoute,

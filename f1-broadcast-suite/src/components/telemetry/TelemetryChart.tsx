@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { useOpenF1, useLatestDataDate } from "@/hooks/useOpenF1";
 import { type OF1CarData } from "@/lib/openf1";
+import { EngineAudioPlayer } from "./EngineAudioPlayer";
 
 interface Props {
   sessionKey: number;
@@ -66,8 +67,16 @@ export function TelemetryChart({ sessionKey, driverNumber, color }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {charts.map((c) => (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-end px-1">
+        <EngineAudioPlayer 
+          rpm={frames.length ? (frames[frames.length - 1]?.rpm as number) || 0 : 0} 
+          throttle={frames.length ? (frames[frames.length - 1]?.throttle as number) || 0 : 0} 
+          color={color} 
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {charts.map((c) => (
         <div key={c.key} className="bg-[#111] ring-1 ring-white/5 rounded-md p-4 h-44">
           <div className="flex justify-between mb-2">
             <span className="text-[10px] uppercase tracking-widest text-[#888] font-orbitron font-semibold">{c.label}</span>
@@ -94,6 +103,7 @@ export function TelemetryChart({ sessionKey, driverNumber, color }: Props) {
           </ResponsiveContainer>
         </div>
       ))}
+    </div>
     </div>
   );
 }
