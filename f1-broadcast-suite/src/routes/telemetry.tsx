@@ -158,7 +158,7 @@ function Telemetry() {
   const { data: drivers, loading: driversLoading } = useOpenF1<OF1Driver[]>(
     "drivers",
     { session_key: session?.session_key },
-    { intervalMs: 60_000, enabled: !!session },
+    { intervalMs: 0, enabled: !!session },
   );
   const [a, setA] = useState<number | null>(null);
   const [b, setB] = useState<number | null>(null);

@@ -20,7 +20,7 @@ export function useOpenF1<T = unknown>(
   // store latest data ref to enable manual refresh
   const lastAbort = useRef<AbortController | null>(null);
 
-  const fetchFn = useCallback(async () => {
+  const fetchFn = useCallback(async (retryCount = 0) => {
     lastAbort.current?.abort();
     const ac = new AbortController();
     lastAbort.current = ac;
@@ -33,10 +33,15 @@ export function useOpenF1<T = unknown>(
       }
     } catch (err) {
       if (!ac.signal.aborted && (err as Error)?.name !== "AbortError") {
-        // If we already have data, don't nuke the UI with an error (e.g. on 429 Rate Limit)
-        // Just silently fail this poll and try again next time.
         setData((prev) => {
-          if (!prev) setError(err as Error);
+          if (!prev) {
+            if (retryCount < 3) {
+              // Auto-retry with backoff on first load failures (e.g. 429 rate limit)
+              setTimeout(() => fetchFn(retryCount + 1), 1000 * Math.pow(2, retryCount));
+            } else {
+              setError(err as Error);
+            }
+          }
           return prev;
         });
       }
