@@ -57,17 +57,17 @@ export function TrackMap3D({ sessionKey, drivers, locations }: Props) {
     <div className="absolute inset-0">
       
       {/* UI Overlay */}
-      <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2 pointer-events-none">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col gap-2 pointer-events-none">
         <button 
           onClick={() => setIsDirectorMode(!isDirectorMode)}
-          className={`pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-md ring-1 transition-all backdrop-blur-md ${
+          className={`pointer-events-auto flex items-center gap-3 px-6 py-3 rounded-full ring-1 transition-all backdrop-blur-md shadow-2xl ${
             isDirectorMode 
-              ? "bg-[#E8002D]/20 ring-[#E8002D] text-white"
-              : "bg-black/50 ring-white/10 text-[#888] hover:text-white"
+              ? "bg-[#E8002D]/20 ring-[#E8002D] text-white shadow-[#E8002D]/20"
+              : "bg-black/80 ring-white/20 text-[#F5F5F5] hover:bg-black hover:ring-white/40"
           }`}
         >
-          <Video className="size-4" />
-          <span className="text-[10px] font-orbitron font-bold uppercase tracking-widest">
+          <Video className="size-5" />
+          <span className="text-xs font-orbitron font-bold uppercase tracking-widest">
             {isDirectorMode ? "Director Active" : "Enable AI Director"}
           </span>
           {isDirectorMode && (

@@ -61,7 +61,7 @@ export function TelemetryChart({ sessionKey, driverNumber, color }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end px-1">
+      <div className="flex justify-center px-1 mb-4">
         <EngineAudioPlayer 
           rpm={frames.length ? (frames[frames.length - 1]?.rpm as number) || 0 : 0} 
           throttle={frames.length ? (frames[frames.length - 1]?.throttle as number) || 0 : 0} 

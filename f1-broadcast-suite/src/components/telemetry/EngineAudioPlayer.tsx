@@ -38,7 +38,7 @@ export function EngineAudioPlayer({ rpm, throttle, color = "#E8002D" }: Props) {
 
       <button
         onClick={isPlaying ? stopAudio : initAudio}
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-sm ring-1 transition-all ${
+        className={`flex items-center gap-3 px-5 py-2.5 rounded-md ring-1 transition-all shadow-xl ${
           isPlaying 
             ? "bg-[#1a1a1a] ring-white/20 hover:ring-white/40 text-white"
             : "bg-[#0a0a0a] ring-white/10 hover:ring-white/30 text-[#888] hover:text-white"
@@ -46,15 +46,15 @@ export function EngineAudioPlayer({ rpm, throttle, color = "#E8002D" }: Props) {
       >
         {isPlaying ? (
           <>
-            <Volume2 className="size-3.5" style={{ color }} />
-            <span className="text-[9px] font-orbitron font-bold uppercase tracking-widest">
+            <Volume2 className="size-4" style={{ color }} />
+            <span className="text-[10px] font-orbitron font-bold uppercase tracking-widest">
               Live Audio
             </span>
           </>
         ) : (
           <>
-            <VolumeX className="size-3.5" />
-            <span className="text-[9px] font-orbitron font-bold uppercase tracking-widest">
+            <VolumeX className="size-4" />
+            <span className="text-[10px] font-orbitron font-bold uppercase tracking-widest">
               Engage Audio
             </span>
           </>
