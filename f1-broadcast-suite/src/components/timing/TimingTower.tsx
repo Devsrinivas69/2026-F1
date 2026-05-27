@@ -1,6 +1,6 @@
 import { useMemo, useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useOpenF1 } from "@/hooks/useOpenF1";
+import { useOpenF1, useLatestDataDate } from "@/hooks/useOpenF1";
 import {
   fmtInterval,
   type OF1Driver,
@@ -41,7 +41,12 @@ export function TimingTower({ sessionKey, compact }: Props) {
   const { data: intervals } = useOpenF1<OF1Interval[]>("intervals", { session_key: sessionKey }, { intervalMs: 2000 });
   const { data: laps } = useOpenF1<OF1Lap[]>("laps", { session_key: sessionKey }, { intervalMs: 5000 });
   const { data: stints } = useOpenF1<OF1Stint[]>("stints", { session_key: sessionKey }, { intervalMs: 15_000 });
-  const { data: carData } = useOpenF1<OF1CarData[]>("car_data", { session_key: sessionKey }, { intervalMs: 3000 });
+  const latestDate = useLatestDataDate(sessionKey);
+  const { data: carData } = useOpenF1<OF1CarData[]>(
+    "car_data", 
+    { session_key: sessionKey, ...(latestDate ? { "date>": latestDate } : {}) }, 
+    { intervalMs: 3000, enabled: !!latestDate }
+  );
   const { data: pits } = useOpenF1<OF1Pit[]>("pit", { session_key: sessionKey }, { intervalMs: 5000 });
 
   const rows = useMemo(() => {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import * as d3 from "d3";
-import { useOpenF1 } from "@/hooks/useOpenF1";
+import { useOpenF1, useLatestDataDate } from "@/hooks/useOpenF1";
 import { type OF1Driver, type OF1Location } from "@/lib/openf1";
 
 const TrackMap3D = lazy(() => import("./TrackMap3D").then((m) => ({ default: m.TrackMap3D })));
@@ -12,9 +12,12 @@ interface Props {
 export function TrackMap({ sessionKey }: Props) {
   const [mode, setMode] = useState<"2D" | "3D">("2D");
   const { data: drivers } = useOpenF1<OF1Driver[]>("drivers", { session_key: sessionKey }, { intervalMs: 30_000 });
-  // OpenF1 /location is heavy — pull recent window only. For demo we just pull once every 3s.
-  const { data: locations, loading, error } = useOpenF1<OF1Location[]>("location", { session_key: sessionKey }, { intervalMs: 3000 });
-
+  const latestDate = useLatestDataDate(sessionKey);
+  const { data: locations, loading, error } = useOpenF1<OF1Location[]>(
+    "location", 
+    { session_key: sessionKey, ...(latestDate ? { "date>": latestDate } : {}) }, 
+    { intervalMs: 3000, enabled: !!latestDate }
+  );
   return (
     <div className="aspect-video bg-[#111] ring-1 ring-white/5 rounded-md flex flex-col p-5 relative">
       <div className="flex justify-between items-center mb-4">

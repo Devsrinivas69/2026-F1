@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
-import { useOpenF1 } from "@/hooks/useOpenF1";
+import { useOpenF1, useLatestDataDate } from "@/hooks/useOpenF1";
 import { type OF1CarData } from "@/lib/openf1";
 
 interface Props {
@@ -12,10 +12,11 @@ interface Props {
 interface Frame { t: number; speed: number; throttle: number; brake: number; gear: number; rpm: number; drs: number; }
 
 export function TelemetryChart({ sessionKey, driverNumber, color }: Props) {
+  const latestDate = useLatestDataDate(sessionKey);
   const { data, loading, error } = useOpenF1<OF1CarData[]>(
     "car_data",
-    { session_key: sessionKey, driver_number: driverNumber },
-    { intervalMs: 2000 },
+    { session_key: sessionKey, driver_number: driverNumber, ...(latestDate ? { "date>": latestDate } : {}) },
+    { intervalMs: 2000, enabled: !!latestDate },
   );
 
   const [frames, setFrames] = useState<Frame[]>([]);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { openf1 } from "@/lib/openf1";
 
 interface Options {
@@ -59,4 +59,16 @@ export function useOpenF1<T = unknown>(
   }, [fetchFn, intervalMs, enabled]);
 
   return { data, error, loading, refetch: fetchFn };
+}
+
+export function useLatestDataDate(sessionKey: number) {
+  const { data: laps } = useOpenF1<any[]>("laps", { session_key: sessionKey }, { intervalMs: 10_000 });
+  return useMemo(() => {
+    if (!laps?.length) return undefined;
+    let max = "1970";
+    for (const l of laps) {
+      if (l.date_start && l.date_start > max) max = l.date_start;
+    }
+    return max;
+  }, [laps]);
 }
