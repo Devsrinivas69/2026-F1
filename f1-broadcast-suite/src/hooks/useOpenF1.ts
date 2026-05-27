@@ -33,7 +33,12 @@ export function useOpenF1<T = unknown>(
       }
     } catch (err) {
       if (!ac.signal.aborted && (err as Error)?.name !== "AbortError") {
-        setError(err as Error);
+        // If we already have data, don't nuke the UI with an error (e.g. on 429 Rate Limit)
+        // Just silently fail this poll and try again next time.
+        setData((prev) => {
+          if (!prev) setError(err as Error);
+          return prev;
+        });
       }
     } finally {
       if (!ac.signal.aborted) setLoading(false);
