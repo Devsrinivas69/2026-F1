@@ -49,7 +49,7 @@ export function TrackMap({ sessionKey }: Props) {
           <TrackMap2D drivers={drivers ?? []} locations={locations ?? []} />
         ) : (
           <Suspense fallback={<LoadingHud label="Loading 3D scene…" />}>
-            <TrackMap3D drivers={drivers ?? []} locations={locations ?? []} />
+            <TrackMap3D sessionKey={sessionKey} drivers={drivers ?? []} locations={locations ?? []} />
           </Suspense>
         )}
       </div>
