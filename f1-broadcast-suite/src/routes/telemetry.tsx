@@ -8,6 +8,7 @@ import { TyreHeatmap } from "@/components/telemetry/TyreHeatmap";
 import { FuelGauge } from "@/components/telemetry/FuelGauge";
 import { type OF1Driver, type OF1Stint, type OF1Lap } from "@/lib/openf1";
 import { Activity, Gauge, Flame, Droplets } from "lucide-react";
+import { TelemetrySkeleton } from "@/components/shared/Skeleton";
 
 export const Route = createFileRoute("/telemetry")({ component: Telemetry });
 
@@ -164,17 +165,8 @@ function Telemetry() {
   const [b, setB] = useState<number | null>(null);
 
   if (sessionLoading && !session) {
-    return (
-      <div className="min-h-[calc(100vh-56px)] bg-[#050505] flex items-center justify-center">
-        <div className="flex gap-2">
-          {[0, 150, 300].map((d) => (
-            <div key={d} className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: `${d}ms` }} />
-          ))}
-        </div>
-      </div>
-    );
+    return <TelemetrySkeleton />;
   }
-
   if (!session) {
     return (
       <div className="min-h-[calc(100vh-56px)] bg-[#050505] flex items-center justify-center">

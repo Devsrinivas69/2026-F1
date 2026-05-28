@@ -8,6 +8,7 @@ import { useOpenF1 } from "@/hooks/useOpenF1";
 import { type OF1RaceControl, type OF1Weather } from "@/lib/openf1";
 import { Link } from "@tanstack/react-router";
 import { Wind, Droplets, Thermometer, ArrowLeft } from "lucide-react";
+import { PitWallSkeleton } from "@/components/shared/Skeleton";
 
 export const Route = createFileRoute("/pitwall")({ component: PitWall });
 
@@ -36,15 +37,7 @@ function PitWall() {
   const w = weather?.[weather.length - 1];
 
   if (loading && !session) {
-    return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="flex gap-1.5">
-          {[0, 150, 300].map((d) => (
-            <div key={d} className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: `${d}ms` }} />
-          ))}
-        </div>
-      </div>
-    );
+    return <PitWallSkeleton />;
   }
 
   if (!session) {

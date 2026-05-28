@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Radio, Activity, Film, History, Home, Gauge } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CommandPalette } from "@/components/shared/CommandPalette";
 
 const NAV = [
   { to: "/", label: "Home", icon: Home },
@@ -15,10 +16,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isPitWall = pathname.startsWith("/pitwall");
   const [time, setTime] = useState(new Date());
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(id);
+  }, []);
+
+  // Global Ctrl/Cmd+K listener
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   return (
@@ -58,6 +72,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+
+          {/* ⌘K badge */}
+          <button
+            id="open-command-palette"
+            onClick={() => setPaletteOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/4 hover:bg-white/8 ring-1 ring-white/8 hover:ring-white/15 transition-all"
+          >
+            <span className="text-[9px] font-jetbrains text-[#444]">Search commands</span>
+            <kbd className="flex items-center gap-0.5 text-[9px] font-orbitron text-[#333]">
+              <span>⌘</span><span>K</span>
+            </kbd>
+          </button>
 
           {/* Status bar */}
           <div className="flex items-center gap-4 text-[9px] font-orbitron font-bold tracking-widest text-[#444]">
@@ -117,6 +143,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       )}
+
+      {/* Global Command Palette */}
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   );
 }

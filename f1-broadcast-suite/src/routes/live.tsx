@@ -9,6 +9,7 @@ import { AISummary } from "@/components/ai/AISummary";
 import { type OF1Weather } from "@/lib/openf1";
 import { Wifi, Clock, Thermometer, Droplets, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LivePageSkeleton } from "@/components/shared/Skeleton";
 
 export const Route = createFileRoute("/live")({ component: Live });
 
@@ -118,17 +119,7 @@ function Live() {
 }
 
 function LoadingScreen() {
-  return (
-    <div className="min-h-[calc(100vh-56px)] bg-[#050505] flex flex-col items-center justify-center gap-4">
-      <Wifi className="size-6 text-[#E8002D] animate-pulse" />
-      <div className="flex gap-1.5">
-        {[0, 150, 300].map((d) => (
-          <div key={d} className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: `${d}ms` }} />
-        ))}
-      </div>
-      <p className="text-[#333] text-[10px] font-jetbrains">Connecting to OpenF1…</p>
-    </div>
-  );
+  return <LivePageSkeleton />;
 }
 
 function ErrorScreen({ message }: { message: string }) {

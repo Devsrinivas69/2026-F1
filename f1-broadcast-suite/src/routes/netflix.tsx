@@ -5,6 +5,7 @@ import { useActiveSession } from "@/hooks/useActiveSession";
 import { useOpenF1 } from "@/hooks/useOpenF1";
 import { AISummary } from "@/components/ai/AISummary";
 import { type OF1Driver, type OF1Position, type OF1Lap, fmtLap } from "@/lib/openf1";
+import { NetflixSkeleton } from "@/components/shared/Skeleton";
 
 export const Route = createFileRoute("/netflix")({ component: NetflixMode });
 
@@ -64,18 +65,8 @@ function NetflixMode() {
   }, [laps]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: "0ms" }} />
-          <div className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: "150ms" }} />
-          <div className="size-1.5 rounded-full bg-[#E8002D] animate-bounce" style={{ animationDelay: "300ms" }} />
-          <span className="text-[#555] font-orbitron text-xs uppercase tracking-widest ml-2">Acquiring feed…</span>
-        </div>
-      </div>
-    );
+    return <NetflixSkeleton />;
   }
-
   const title = session?.session_name?.toUpperCase() ?? "THE RACE";
   const where = session ? `${session.circuit_short_name.toUpperCase()} · ${session.country_name.toUpperCase()}` : "—";
   const year = session?.year ?? new Date().getFullYear();
