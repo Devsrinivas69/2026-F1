@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
-import { useGLTF } from "@react-three/drei";
+import { OrbitControls, Environment, useGLTF } from "@react-three/drei";
+import { EffectComposer, DepthOfField, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { type OF1Driver, type OF1Location } from "@/lib/openf1";
 import { useTrackGeometry } from "@/hooks/useTrackGeometry";
@@ -76,12 +75,17 @@ export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: P
       </AnimatePresence>
 
       <Canvas camera={{ position: [0, 80, 80], fov: 40 }} dpr={[1, 2]} shadows>
-        <ambientLight intensity={0.6} />
+        <Environment preset="night" />
+        <ambientLight intensity={0.4} />
         <directionalLight 
           position={[50, 100, 50]} 
-          intensity={1.5} 
+          intensity={2} 
           castShadow 
           shadow-mapSize={[2048, 2048]} 
+          shadow-camera-left={-200}
+          shadow-camera-right={200}
+          shadow-camera-top={200}
+          shadow-camera-bottom={-200}
         />
         
         {/* The Track Mesh (Asphalt) */}
@@ -102,8 +106,8 @@ export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: P
           <meshStandardMaterial color="#0a0a0a" roughness={1} />
         </mesh>
 
-        {/* Custom 3D Track Model Backdrop */}
-        <group position={[0, -10, 0]} scale={[10, 10, 10]}>
+        {/* Custom 3D Track Model Backdrop - lowered and materials updated */}
+        <group position={[0, -12, 0]} scale={[10, 10, 10]}>
           <primitive object={jeddahTrack} />
         </group>
 
@@ -149,6 +153,7 @@ export function TrackMap3D({ sessionKey, drivers, locations, isDirectorMode }: P
                 bokehScale={4} 
                 height={480} 
               />
+              <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} />
             </EffectComposer>
           </>
         )}
