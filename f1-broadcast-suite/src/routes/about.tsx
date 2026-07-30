@@ -18,7 +18,7 @@ function AboutPage() {
             </div>
             <div>
               <h1 className="text-4xl md:text-5xl font-orbitron font-black uppercase tracking-tighter">
-                Srinivas <span className="text-[#E8002D]">Reddy K.H</span>
+                Vinay <span className="text-[#E8002D]">Kumar</span>
               </h1>
               <p className="text-xl text-[#888] font-orbitron uppercase tracking-widest mt-1">
                 Lead Architect & Engineer
@@ -94,7 +94,7 @@ function AboutPage() {
               <ShieldAlert className="size-10 text-[#00D2BE]" />
               <div>
                 <h4 className="font-orbitron font-bold uppercase tracking-widest text-white">System Status</h4>
-                <p className="text-[#888] text-sm mt-1">All systems nominal. Developed exclusively by Srinivas Reddy K.H.</p>
+                <p className="text-[#888] text-sm mt-1">All systems nominal. Developed exclusively by Vinay Kumar.</p>
               </div>
             </div>
           </div>

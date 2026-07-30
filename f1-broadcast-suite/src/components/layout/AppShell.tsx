@@ -114,7 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
             <div className="px-3 py-1 bg-[#111] ring-1 ring-white/10 rounded-sm group-hover:ring-[#E8002D]/50 group-hover:bg-[#E8002D]/10 transition-all">
               <span className="text-[#E8002D] text-[11px] font-orbitron font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(232,0,45,0.5)]">
-                Srinivas Reddy K.H
+                Vinay Kumar
               </span>
             </div>
           </Link>
